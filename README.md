@@ -73,7 +73,8 @@ Por ejemplo:
 - `{LUGAR_EXPEDICION}` será reemplazado por el valor exacto de LUGAR_EXPEDICION
 
 
-image.png
+<img width="784" height="409" alt="image" src="https://github.com/user-attachments/assets/e8a60333-f0f0-4c99-aa57-270720352ca1" />
+
 
 Los placeholders pueden estar en cualquier parte del documento:
 - Párrafos normales
