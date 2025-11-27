@@ -27,6 +27,50 @@ document.getElementById('excelFile').addEventListener('change', function(e) {
     }
 });
 
+// Manejo del botón de descarga de Excel
+document.getElementById('downloadExcelBtn').addEventListener('click', async function(e) {
+    e.preventDefault();
+    
+    const button = this;
+    const originalText = button.innerHTML;
+    
+    try {
+        button.disabled = true;
+        button.innerHTML = '⏳ Descargando...';
+        
+        const response = await fetch('/download-excel');
+        
+        if (!response.ok) {
+            throw new Error('Error al descargar el archivo');
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'INFORMACION_DIPLOMAS.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        button.innerHTML = '✅ Descargado';
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Error al descargar Excel:', error);
+        button.innerHTML = '❌ Error';
+        showMessage('Error al descargar el archivo Excel. Intenta nuevamente.', 'error');
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }, 2000);
+    }
+});
+
 // Manejo del formulario
 document.getElementById('diplomaForm').addEventListener('submit', async function(e) {
     e.preventDefault();

@@ -205,6 +205,42 @@
             background: #218838;
             transform: translateY(-2px);
         }
+
+        .download-excel-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            text-decoration: none;
+            gap: 8px;
+        }
+
+        .download-excel-button:hover {
+            background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
+        }
+
+        .download-excel-button:active {
+            transform: translateY(0);
+        }
+
+        .help-text {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -233,6 +269,10 @@
                         <span class="file-name" id="excelFileName">Seleccionar archivo...</span>
                     </div>
                 </div>
+                <button type="button" class="download-excel-button" id="downloadExcelBtn">
+                    📥 Descargar Excel de Ejemplo
+                </button>
+                <p class="help-text">¿No tienes un Excel? Descarga el formato de ejemplo</p>
             </div>
 
             <button type="submit" class="generate-button" id="generateButton">

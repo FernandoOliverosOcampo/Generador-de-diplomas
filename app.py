@@ -13,7 +13,7 @@ import tempfile
 import shutil
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__, static_folder='.', static_url_path='')
+app = Flask(__name__)
 CORS(app)
 
 # Configuración
@@ -129,6 +129,49 @@ def index():
 @app.route('/app.js')
 def app_js():
     return send_file('app.js', mimetype='application/javascript')
+
+@app.route('/download-excel', methods=['GET'])
+def download_excel():
+    excel_path = 'INFORMACIÓN DIPLOMAS.xlsx'
+    try:
+        print(f"Intentando descargar Excel desde: {os.path.abspath(excel_path)}")
+        print(f"Archivo existe: {os.path.exists(excel_path)}")
+        
+        if os.path.exists(excel_path):
+            print(f"Enviando archivo: {excel_path}")
+            return send_file(
+                excel_path,
+                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                as_attachment=True,
+                download_name='INFORMACION_DIPLOMAS.xlsx'
+            )
+        else:
+            # Intentar con diferentes variaciones del nombre
+            possible_names = [
+                'INFORMACIÓN DIPLOMAS.xlsx',
+                'INFORMACION DIPLOMAS.xlsx',
+                'informacion_diplomas.xlsx'
+            ]
+            print(f"Buscando archivo con nombres alternativos...")
+            for name in possible_names:
+                full_path = os.path.abspath(name)
+                print(f"Buscando: {full_path} - Existe: {os.path.exists(name)}")
+                if os.path.exists(name):
+                    print(f"Archivo encontrado: {name}")
+                    return send_file(
+                        name,
+                        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        as_attachment=True,
+                        download_name='INFORMACION_DIPLOMAS.xlsx'
+                    )
+            print("Archivo no encontrado en ninguna ubicación")
+            return jsonify({'error': 'Archivo Excel de ejemplo no encontrado'}), 404
+    except Exception as e:
+        import traceback
+        error_msg = f"Error al descargar Excel: {str(e)}"
+        print(error_msg)
+        print(traceback.format_exc())
+        return jsonify({'error': error_msg}), 500
 
 @app.route('/generate', methods=['POST'])
 def generate_diplomas():
@@ -267,5 +310,12 @@ def generate_diplomas():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_ENV') == 'development'
+    
+    # Listar todas las rutas registradas para debug
+    print("\n=== Rutas registradas ===")
+    for rule in app.url_map.iter_rules():
+        print(f"{rule.rule} -> {rule.endpoint} [{', '.join(rule.methods)}]")
+    print("========================\n")
+    
     app.run(host='0.0.0.0', port=port, debug=debug)
 

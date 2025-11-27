@@ -55,10 +55,10 @@ El archivo Excel debe tener:
 
 ### Ejemplo de estructura del Excel:
 
-| NOMBRE_COMPLETO | N_DOCUMENTO | LUGAR_EXPEDICION | OTRO_CAMPO |
-|----------------|-------------|------------------|------------|
-| Juan Pérez     | 1234567890  | Bogotá           | Valor1     |
-| María García   | 9876543210  | Medellín         | Valor2     |
+| N_REGISTRO| NOMBRE_COMPLETO| N_DOCUMENTO | LUGAR_EXPEDICION | 
+|-----------|----------------|-------------|------------------|
+| 01        | Juan Pérez     | 1234567890  | Bogotá           | 
+| 02        | María García   | 9876543210  | Medellín         | 
 
 ## 📄 Formato de la Plantilla Word
 
@@ -71,6 +71,9 @@ Por ejemplo:
 - `{NOMBRE_COMPLETO}` será reemplazado por el valor de la columna NOMBRE_COMPLETO
 - `{N_DOCUMENTO}` será reemplazado por el valor formateado de N_DOCUMENTO
 - `{LUGAR_EXPEDICION}` será reemplazado por el valor exacto de LUGAR_EXPEDICION
+
+
+image.png
 
 Los placeholders pueden estar en cualquier parte del documento:
 - Párrafos normales
