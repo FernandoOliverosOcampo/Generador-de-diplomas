@@ -173,6 +173,50 @@ def download_excel():
         print(traceback.format_exc())
         return jsonify({'error': error_msg}), 500
 
+@app.route('/download-word', methods=['GET'])
+def download_word():
+    word_path = 'Diploma  nuevo 2025.docx'
+    try:
+        print(f"Intentando descargar Word desde: {os.path.abspath(word_path)}")
+        print(f"Archivo existe: {os.path.exists(word_path)}")
+        
+        if os.path.exists(word_path):
+            print(f"Enviando archivo: {word_path}")
+            return send_file(
+                word_path,
+                mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                as_attachment=True,
+                download_name='Diploma_nuevo_2025.docx'
+            )
+        else:
+            # Intentar con diferentes variaciones del nombre
+            possible_names = [
+                'Diploma  nuevo 2025.docx',
+                'Diploma nuevo 2025.docx',
+                'diploma nuevo 2025.docx',
+                'diploma_nuevo_2025.docx'
+            ]
+            print(f"Buscando archivo con nombres alternativos...")
+            for name in possible_names:
+                full_path = os.path.abspath(name)
+                print(f"Buscando: {full_path} - Existe: {os.path.exists(name)}")
+                if os.path.exists(name):
+                    print(f"Archivo encontrado: {name}")
+                    return send_file(
+                        name,
+                        mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        as_attachment=True,
+                        download_name='Diploma_nuevo_2025.docx'
+                    )
+            print("Archivo no encontrado en ninguna ubicación")
+            return jsonify({'error': 'Archivo Word de ejemplo no encontrado'}), 404
+    except Exception as e:
+        import traceback
+        error_msg = f"Error al descargar Word: {str(e)}"
+        print(error_msg)
+        print(traceback.format_exc())
+        return jsonify({'error': error_msg}), 500
+
 @app.route('/generate', methods=['POST'])
 def generate_diplomas():
     try:

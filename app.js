@@ -26,6 +26,49 @@ document.getElementById('excelFile').addEventListener('change', function(e) {
         button.classList.remove('has-file');
     }
 });
+// Manejo del botón de descarga de Word
+document.getElementById('downloadWordBtn').addEventListener('click', async function(e) {
+    e.preventDefault();
+    
+    const button = this;
+    const originalText = button.innerHTML;
+    
+    try {
+        button.disabled = true;
+        button.innerHTML = '⏳ Descargando...';
+        
+        const response = await fetch('/download-word');
+        
+        if (!response.ok) {
+            throw new Error('Error al descargar el archivo');
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Diploma nuevo 2025.docx';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        button.innerHTML = '✅ Descargado';
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Error al descargar Word:', error);
+        button.innerHTML = '❌ Error';
+        showMessage('Error al descargar el archivo Word. Intenta nuevamente.', 'error');
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }, 2000);
+    }
+});
 
 // Manejo del botón de descarga de Excel
 document.getElementById('downloadExcelBtn').addEventListener('click', async function(e) {
