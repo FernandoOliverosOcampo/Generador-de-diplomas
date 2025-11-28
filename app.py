@@ -16,6 +16,9 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 CORS(app)
 
+# Obtener el directorio base donde está el script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Configuración
 UPLOAD_FOLDER = tempfile.gettempdir()
 ALLOWED_EXTENSIONS = {'docx', 'xlsx', 'xls'}
@@ -132,40 +135,56 @@ def app_js():
 
 @app.route('/download-excel', methods=['GET'])
 def download_excel():
-    excel_path = 'INFORMACIÓN DIPLOMAS.xlsx'
     try:
-        print(f"Intentando descargar Excel desde: {os.path.abspath(excel_path)}")
-        print(f"Archivo existe: {os.path.exists(excel_path)}")
+        # Lista de posibles nombres del archivo Excel
+        possible_names = [
+            'INFORMACIÓN DIPLOMAS.xlsx',  # Nombre exacto con acento
+            'INFORMACION DIPLOMAS.xlsx',  # Sin acento
+            'informacion_diplomas.xlsx'   # Minúsculas con guiones bajos
+        ]
         
-        if os.path.exists(excel_path):
-            print(f"Enviando archivo: {excel_path}")
-            return send_file(
-                excel_path,
-                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                as_attachment=True,
-                download_name='INFORMACION_DIPLOMAS.xlsx'
-            )
-        else:
-            # Intentar con diferentes variaciones del nombre
-            possible_names = [
-                'INFORMACIÓN DIPLOMAS.xlsx',
-                'INFORMACION DIPLOMAS.xlsx',
-                'informacion_diplomas.xlsx'
-            ]
-            print(f"Buscando archivo con nombres alternativos...")
-            for name in possible_names:
+        print(f"Directorio base: {BASE_DIR}")
+        print(f"Directorio de trabajo actual: {os.getcwd()}")
+        print(f"Buscando archivo Excel...")
+        
+        # Buscar el archivo en el directorio base
+        for name in possible_names:
+            # Intentar con ruta relativa primero
+            if os.path.exists(name):
                 full_path = os.path.abspath(name)
-                print(f"Buscando: {full_path} - Existe: {os.path.exists(name)}")
-                if os.path.exists(name):
-                    print(f"Archivo encontrado: {name}")
-                    return send_file(
-                        name,
-                        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                        as_attachment=True,
-                        download_name='INFORMACION_DIPLOMAS.xlsx'
-                    )
-            print("Archivo no encontrado en ninguna ubicación")
-            return jsonify({'error': 'Archivo Excel de ejemplo no encontrado'}), 404
+                print(f"Archivo encontrado (relativo): {full_path}")
+                return send_file(
+                    full_path,
+                    mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    as_attachment=True,
+                    download_name='INFORMACION_DIPLOMAS.xlsx'
+                )
+            
+            # Intentar con ruta absoluta desde BASE_DIR
+            full_path = os.path.join(BASE_DIR, name)
+            if os.path.exists(full_path):
+                print(f"Archivo encontrado (absoluto): {full_path}")
+                return send_file(
+                    full_path,
+                    mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    as_attachment=True,
+                    download_name='INFORMACION_DIPLOMAS.xlsx'
+                )
+            
+            print(f"No encontrado: {name} (ruta: {full_path})")
+        
+        # Listar archivos en el directorio para debugging
+        print(f"Archivos en directorio base:")
+        try:
+            for file in os.listdir(BASE_DIR):
+                print(f"  - {file}")
+        except Exception as e:
+            print(f"Error al listar directorio: {e}")
+        
+        error_msg = 'Archivo Excel de ejemplo no encontrado. Verifica que el archivo "INFORMACIÓN DIPLOMAS.xlsx" esté en el directorio raíz del proyecto.'
+        print(f"ERROR: {error_msg}")
+        return jsonify({'error': error_msg}), 404
+        
     except Exception as e:
         import traceback
         error_msg = f"Error al descargar Excel: {str(e)}"
@@ -175,41 +194,57 @@ def download_excel():
 
 @app.route('/download-word', methods=['GET'])
 def download_word():
-    word_path = 'Diploma  nuevo 2025.docx'
     try:
-        print(f"Intentando descargar Word desde: {os.path.abspath(word_path)}")
-        print(f"Archivo existe: {os.path.exists(word_path)}")
+        # Lista de posibles nombres del archivo Word
+        possible_names = [
+            'Diploma  nuevo 2025.docx',  # Nombre exacto con dos espacios
+            'Diploma nuevo 2025.docx',   # Con un espacio
+            'diploma nuevo 2025.docx',   # Minúsculas
+            'diploma_nuevo_2025.docx'    # Con guiones bajos
+        ]
         
-        if os.path.exists(word_path):
-            print(f"Enviando archivo: {word_path}")
-            return send_file(
-                word_path,
-                mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                as_attachment=True,
-                download_name='Diploma_nuevo_2025.docx'
-            )
-        else:
-            # Intentar con diferentes variaciones del nombre
-            possible_names = [
-                'Diploma  nuevo 2025.docx',
-                'Diploma nuevo 2025.docx',
-                'diploma nuevo 2025.docx',
-                'diploma_nuevo_2025.docx'
-            ]
-            print(f"Buscando archivo con nombres alternativos...")
-            for name in possible_names:
+        print(f"Directorio base: {BASE_DIR}")
+        print(f"Directorio de trabajo actual: {os.getcwd()}")
+        print(f"Buscando archivo Word...")
+        
+        # Buscar el archivo en el directorio base
+        for name in possible_names:
+            # Intentar con ruta relativa primero
+            if os.path.exists(name):
                 full_path = os.path.abspath(name)
-                print(f"Buscando: {full_path} - Existe: {os.path.exists(name)}")
-                if os.path.exists(name):
-                    print(f"Archivo encontrado: {name}")
-                    return send_file(
-                        name,
-                        mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                        as_attachment=True,
-                        download_name='Diploma_nuevo_2025.docx'
-                    )
-            print("Archivo no encontrado en ninguna ubicación")
-            return jsonify({'error': 'Archivo Word de ejemplo no encontrado'}), 404
+                print(f"Archivo encontrado (relativo): {full_path}")
+                return send_file(
+                    full_path,
+                    mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    as_attachment=True,
+                    download_name='Diploma_nuevo_2025.docx'
+                )
+            
+            # Intentar con ruta absoluta desde BASE_DIR
+            full_path = os.path.join(BASE_DIR, name)
+            if os.path.exists(full_path):
+                print(f"Archivo encontrado (absoluto): {full_path}")
+                return send_file(
+                    full_path,
+                    mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    as_attachment=True,
+                    download_name='Diploma_nuevo_2025.docx'
+                )
+            
+            print(f"No encontrado: {name} (ruta: {full_path})")
+        
+        # Listar archivos en el directorio para debugging
+        print(f"Archivos en directorio base:")
+        try:
+            for file in os.listdir(BASE_DIR):
+                print(f"  - {file}")
+        except Exception as e:
+            print(f"Error al listar directorio: {e}")
+        
+        error_msg = 'Archivo Word de ejemplo no encontrado. Verifica que el archivo "Diploma  nuevo 2025.docx" esté en el directorio raíz del proyecto.'
+        print(f"ERROR: {error_msg}")
+        return jsonify({'error': error_msg}), 404
+        
     except Exception as e:
         import traceback
         error_msg = f"Error al descargar Word: {str(e)}"
